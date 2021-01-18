@@ -112,5 +112,25 @@ kubectl delete -f nginx-letsencrypt-staging.yaml
 
 ```
 
+# harbor
+Docking Container Images Alongside Harbor In Minikube, https://medium.com/@Devopscontinens/alongside-harbor-berth-with-minikube-b31e487974f4
+
+```bash
+helm repo add harbor https://helm.goharbor.io
+git clone https://github.com/goharbor/harbor-helm.git
+kubectl create namespace harbor
+helm install harbor harbor/harbor -n harbor
+echo "$(minikube ip) core.harbor.domain" | sudo tee -a /etc/hosts
+
+# docker login
+cd /etc/docker/certs.d
+sudo mkdir core.harbor.domain
+cd core.harbor.domain 
+sudo cp ~/Downloads/ca.crt .
+docker login core.harbor.domain
+docker tag nginx:latest core.harbor.domain/devops/nginx:latest
+docker push core.harbor.domain/devops/nginx:latest
+```
+
 ## Reference
 
