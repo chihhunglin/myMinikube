@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/rule-type: "PathPrefixStrip"
+  name: nginx
+  namespace: testing
+spec:
+  rules:
+  - host: nginx.minikube
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: nginx
+          servicePort: 80
+  tls:
+  - hosts:
+    - nginx.minikube
+    secretName: nginx.minikube-cert

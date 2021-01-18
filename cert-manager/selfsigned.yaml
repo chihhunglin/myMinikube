@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Issuer
+metadata:
+  name: selfsigned
+  namespace: testing
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: nginx.minikube-cert
+  namespace: testing
+spec:
+  commonName: nginx.minikube
+  secretName: nginx.minikube-cert
+  issuerRef:
+    name: selfsigned

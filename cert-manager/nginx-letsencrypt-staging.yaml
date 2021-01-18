@@ -1,0 +1,33 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/rule-type: "PathPrefixStrip"
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+  name: nginx
+  namespace: testing
+spec:
+  rules:
+  - host: ${DOMAIN}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: nginx
+          servicePort: 80
+  tls:
+  - hosts:
+    - ${DOMAIN}
+    secretName: ${DOMAIN}-cert
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: ${DOMAIN}-cert
+  namespace: testing
+spec:
+  commonName: ${DOMAIN}
+  secretName: ${DOMAIN}-cert
+  issuerRef:
+    name: letsencrypt-staging

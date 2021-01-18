@@ -81,7 +81,36 @@ echo "$(minikube ip) nginx.minikube" | sudo tee -a /etc/hosts
 kubectl -n testing logs -f $(kubectl -n testing get pods -l app=nginx -o jsonpath='{.items[0].metadata.name}')
 ```
 
+## cert-manager
+Setup cert-manager, https://community.hetzner.com/tutorials/howto-k8s-traefik-certmanager#step-31---setup-cert-manager
 
+cert-manager(v0.12)
+```bash
+# Setup cert-manager
+kubectl create namespace cert-manager
+kubectl apply --validate=false -f cert-manager.yaml
+watch kubectl -n cert-manager get pods
+kubectl -n testing describe certificate nginx.minikube-cert
+
+# Create self-signed certificate
+kubectl apply -f nginx.yaml
+kubectl -n testing get ing
+
+# Create a staging certificate
+export YOUR_MAIL_ADDRESS=<your@email>
+# create issuer
+envsubst < staging.yaml
+cat staging.yaml| envsubst| kubectl apply -f -
+kubectl describe clusterissuer letsencrypt-staging
+# create staging certificate
+export DOMAIN=nginx.minikube
+envsubst < nginx-letsencrypt-staging.yaml
+cat nginx-letsencrypt-staging.yaml| envsubst| kubectl apply --validate=false -f -
+watch kubectl -n testing describe certificate "${DOMAIN}-cert"
+kubectl -n cert-manager logs -f --tail 20 $(kubectl -n cert-manager get pod -l app=cert-manager -o jsonpath='{.items[0].metadata.name}')
+kubectl delete -f nginx-letsencrypt-staging.yaml
+
+```
 
 ## Reference
 
