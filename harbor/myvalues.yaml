@@ -1,0 +1,8 @@
+expose:
+  tls:
+    enabled: false
+  ingress:
+    annotations:
+      ingress.kubernetes.io/ssl-redirect: "false"
+registry:
+  relativeurls: true

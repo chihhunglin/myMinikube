@@ -132,5 +132,35 @@ docker tag nginx:latest core.harbor.domain/devops/nginx:latest
 docker push core.harbor.domain/devops/nginx:latest
 ```
 
+# Without TLS
+How to Configure GoHarbor as an Insecure Registry for Kubernetes, https://medium.com/devopsturkiye/how-to-configure-goharbor-as-an-insecure-registry-for-kubernetes-e58cd93526a8 
+
+```bash
+vim myvalues.yaml
+helm upgrade harbor harbor/harbor -n harbor -f myvalues.yaml
+sudo vim /etc/docker/daemon.json
+# ubuntu
+------
+{
+"insecure-registries" : ["xx.x.x.x"]
+}
+------
+systemctl reload docker
+systemctl restart docker
+cat ~/.docker/config.json
+```
+
+In minikube
+```bash
+minikube ssh
+sudo su
+cd /usr/lib/systemd/system/
+vi docker.service
+# --label provider=virtualbox --insecure-registry 10.0.0.0/12 --insecure-registry core.harbor.domain
+systemctl daemon-reload
+systemctl restart docker
+docker info
+```
+
 ## Reference
 
