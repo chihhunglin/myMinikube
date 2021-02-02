@@ -9,6 +9,7 @@
 
 ```bash
 minikube start --vm-driver=virtualbox  --cpus 4 --memory 8192 --kubernetes-version v1.16.0
+minikube addons enable ingress
 minikube dashboard
 minikube delete
 
@@ -115,6 +116,15 @@ kubectl delete -f nginx-letsencrypt-staging.yaml
 # harbor
 Docking Container Images Alongside Harbor In Minikube, https://medium.com/@Devopscontinens/alongside-harbor-berth-with-minikube-b31e487974f4
 
+quick start
+```bash
+kubectl create namespace harbor
+helm install -f myvalues.yaml harbor harbor/harbor -n harbor
+
+kubectl create secret docker-registry harborsecret --docker-server=core.harbor.domain --docker-username=admin --docker-password=Harbor12345 --docker-email=dragon270329@gmail.com
+kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "harborsecret"}]}'
+```
+
 ```bash
 helm repo add harbor https://helm.goharbor.io
 git clone https://github.com/goharbor/harbor-helm.git
@@ -132,7 +142,7 @@ docker tag nginx:latest core.harbor.domain/devops/nginx:latest
 docker push core.harbor.domain/devops/nginx:latest
 ```
 
-# Without TLS
+# insecure
 How to Configure GoHarbor as an Insecure Registry for Kubernetes, https://medium.com/devopsturkiye/how-to-configure-goharbor-as-an-insecure-registry-for-kubernetes-e58cd93526a8 
 
 ```bash
